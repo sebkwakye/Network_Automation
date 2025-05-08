@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Instructor</h1>
+    </header>
+    <main>
+        <p>If you have any questions or would like more information, please get in touch:</p>
+        <ul>
+            <li>Richard Saylor</li>
+            <li>Email: rsaylor2@gmu.edu</li>
+            <li>Phone: 571-295-5011</li>
+            <li>(Calls/Texts 9am - 5pm EST Mon-Fri)</li>
+        </ul>
+        <a href="{{ url_for('splash') }}">Back to Home</a>
+    </main>
+    <footer>
+        <p>&copy; 2025 TCOM 570: Network Automation. All rights reserved.</p>
+    </footer>
+</body>
+</html>

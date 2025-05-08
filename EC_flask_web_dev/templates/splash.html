@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Contains metadata and resources used by the page -->
+    <meta charset="UTF-8">
+    <title>Splash Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!--Links an external CSS stylesheet located in the 'static' folder.
+         'url_for' dynamically generates the correct URL for the static file.
+         This helps Flask find and serve the stylesheet properly. -->
+</head>
+<body>
+     <!-- Begins the visible part of the web page -->
+    <header>
+        <h1>TCOM 570: Network Automation</h1>
+        <p class="semester">Spring 2025</p>
+    </header>
+
+    <main>
+        <!-- Main content area of the page -->
+        <section class="intro">
+            <p>Welcome to the Network Automation course website! Here you will find important announcements, resources, and course information.</p>
+        </section>
+
+        <section class="course-info">
+            <h2>Course Information</h2>
+            <ul>
+                <li><strong>Instructor:</strong> <a href="{{ url_for('contact') }}">Contact Information & Office Hours</a></li>
+                <li><strong>Class Meetings:</strong> [Tuesdays 4:30pm - 7:10pm]</li>
+            </ul>
+        </section>
+
+        <section class="course-details">
+            <h2>Course Overview</h2>
+            <p>This course focuses on network automation principles, tools, and techniques. Students will gain practical skills in automating network tasks, improving efficiency, and deploying automation solutions in real-world scenarios.</p>
+
+
+            <h3>Course Resources & Policies</h3>
+            <ul>
+                <li><strong><a href="{{ url_for('honor_code') }}">Honor Code</a></strong></li>
+                <li><strong><a href="{{ url_for('course_goals') }}">Course Goals</a></strong></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TCOM 570: Network Automation. All rights reserved.</p>
+    </footer>
+</body>
+</html>

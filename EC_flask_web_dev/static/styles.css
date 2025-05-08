@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;      /* Sets the font for the entire page to Arial, or a similar sans-serif font */
+    background-color: #f4f4f4;           /* Light gray background color for the entire page */
+    margin: 0;                           /* Removes default margin from the browser */
+    padding: 0;                          /* Removes default padding from the browser */
+}
+
+header, footer {
+    background-color: #333;              /* Dark gray background for both header and footer */
+    color: #fff;                         /* White text color */
+    text-align: center;                  /* Centers the text horizontally */
+    padding: 15px 0;                     /* Adds 15px padding on top and bottom, 0 on sides */
+}
+
+main {
+    max-width: 800px;                    /* Limits the width of the main content area to 800px */
+    margin: 30px auto;                   /* Centers the main content and adds 30px vertical space above and below */
+    padding: 20px;                       /* Adds spacing inside the main content area */
+    background-color: #fff;             /* White background to distinguish it from the page's light gray background */
+    border-radius: 8px;                 /* Slightly rounds the corners of the main content area */
+}
+
+a {
+    display: inline-block;               /* Makes links behave like inline-block elements (can have margins, padding, etc.) */
+    margin-top: 20px;                    /* Adds space above links */
+    color: #0066cc;                      /* Sets a blue color for links */
+    text-decoration: none;              /* Removes the underline from links by default */
+}
+
+a:hover {
+    text-decoration: underline;         /* Adds underline when the user hovers over a link for better UX feedback */
+}

@@ -1,0 +1,158 @@
+<!-- dashboard.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NetInsight Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet" integrity="sha384-ENjdO4Dr2bkBIFxQpeoIfsK5aKubh/u+MgTJoKvj0HIjFQg1jEoZV7AIh5uRgt7B"
+    crossorigin="anonymous" />
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>NetInsight Network Monitoring</h1>
+      <p class="lead">Real-time metrics: Ping, Bandwidth, HTTP, DNS, GeoIP, BGP & iPerf3</p>
+    </header>
+
+    <!-- Ping -->
+<section id="ping-section">
+  <h2>Ping Test</h2>
+  <div class="input-group">
+    <span class="input-group-text">IP</span>
+    <input id="ping-ip" class="form-control" placeholder="8.8.8.8" />
+    <button id="run-ping-btn" class="btn">Run Ping</button>
+  </div>
+  <pre id="ping-result"></pre>
+  <canvas id="pingChart"></canvas>
+</section>
+
+<!-- Bandwidth -->
+<section id="bw-section">
+  <h2>Bandwidth Test</h2>
+  <button id="run-bw-btn" class="btn mb-2">Run Bandwidth</button>
+  <canvas id="bwChart"></canvas>
+</section>
+
+<!-- iPerf3 -->
+<section id="iperf-section">
+  <h2>iPerf3 Test</h2>
+  <div class="input-group">
+    <span class="input-group-text">Server</span>
+    <input id="iperf-server" class="form-control" placeholder="iperf.server.com" />
+    <button id="run-iperf-btn" class="btn">Run iPerf</button>
+  </div>
+  <pre id="iperf-result"></pre>
+  <canvas id="iperfChart"></canvas>
+</section>
+
+<!-- HTTP -->
+<section id="http-section">
+  <h2>HTTP Test</h2>
+  <div class="input-group">
+    <span class="input-group-text">URL</span>
+    <input id="http-url" class="form-control" value="https://www.google.com" />
+    <button id="run-http-btn" class="btn">Run HTTP</button>
+  </div>
+  <pre id="http-result"></pre>
+  <canvas id="httpChart"></canvas>
+</section>
+
+<!-- DNS -->
+<section id="dns-section">
+  <h2>DNS Test</h2>
+  <div class="input-group">
+    <span class="input-group-text">Domain</span>
+    <input id="dns-domain" class="form-control" value="www.amazon.com" />
+    <button id="run-dns-btn" class="btn">Run DNS</button>
+  </div>
+  <pre id="dns-result"></pre>
+  <canvas id="dnsChart"></canvas>
+</section>
+
+<!-- GeoIP -->
+<section id="geoip-section">
+  <h2>GeoIP Lookup</h2>
+  <div class="input-group">
+    <span class="input-group-text">IP</span>
+    <input id="geoip-ip" class="form-control" placeholder="8.8.8.8" />
+    <button id="run-geoip-btn" class="btn">Lookup GeoIP</button>
+  </div>
+  <pre id="geoip-result"></pre>
+</section>
+
+<!-- BGP -->
+<section id="bgp-section">
+  <h2>BGP Prefix Count</h2>
+  <div class="input-group">
+    <span class="input-group-text">ASN</span>
+    <input id="bgp-asn" type="number" class="form-control" placeholder="15169" />
+    <button id="run-bgp-btn" class="btn">Get BGP</button>
+  </div>
+  <pre id="bgp-result"></pre>
+</section>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Initialize empty charts
+    const pingChart  = new Chart(document.getElementById('pingChart').getContext('2d'), { type:'line', data:{labels:[],datasets:[{label:'ms',data:[]}]}, options:{responsive:true,maintainAspectRatio:false} });
+    const bwChart    = new Chart(document.getElementById('bwChart').getContext('2d'),   { type:'line', data:{labels:[],datasets:[{label:'Mbps',data:[]}]}, options:{responsive:true,maintainAspectRatio:false} });
+    const iperfChart = new Chart(document.getElementById('iperfChart').getContext('2d'),{ type:'bar',  data:{labels:[],datasets:[{label:'Mbps',data:[]}]}, options:{responsive:true,maintainAspectRatio:false} });
+    const httpChart  = new Chart(document.getElementById('httpChart').getContext('2d'),  { type:'line', data:{labels:[],datasets:[{label:'ms',data:[]}]}, options:{responsive:true,maintainAspectRatio:false} });
+    const dnsChart   = new Chart(document.getElementById('dnsChart').getContext('2d'),   { type:'line', data:{labels:[],datasets:[{label:'ms',data:[]}]}, options:{responsive:true,maintainAspectRatio:false} });
+
+    // Chart updater
+    function update(chart, labels, data) { chart.data.labels = labels; chart.data.datasets[0].data = data; chart.update(); }
+
+    // 1) Ping
+    document.getElementById('run-ping-btn').onclick = async ()=>{
+      const ip=document.getElementById('ping-ip').value.trim(); if(!ip) return;
+      document.getElementById('ping-result').textContent='Running...';
+      await fetch('/api/ping/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ips:[ip],count:1,interval:0})});
+      const d=await fetch('/api/ping/results').then(r=>r.json());
+      update(pingChart,d.map(x=>x.time),d.map(x=>x.latency));
+      document.getElementById('ping-result').textContent='Done';
+    };
+    // 2) Bandwidth
+    document.getElementById('run-bw-btn').onclick = async ()=>{
+      const btn=document.getElementById('run-bw-btn'); btn.disabled=true;
+      const d=await fetch('/api/bw/run?n=3&interval=0').then(r=>r.json());
+      update(bwChart,d.map(x=>x.time),d.map(x=>x.bw)); btn.disabled=false;
+    };
+    // 3) iPerf
+    document.getElementById('run-iperf-btn').onclick = async ()=>{
+      const btn=document.getElementById('run-iperf-btn'); const s=document.getElementById('iperf-server').value.trim(); if(!s) return;
+      btn.disabled=true; document.getElementById('iperf-result').textContent='Running...';
+      const p=await fetch('/api/iperf/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({server:s,protocol:'tcp',duration:3})}).then(r=>r.json());
+      update(iperfChart,[p.timestamp],[p.bandwidth]); document.getElementById('iperf-result').textContent=p.bandwidth.toFixed(1)+' Mbps'; btn.disabled=false;
+    };
+    // 4) HTTP
+    document.getElementById('run-http-btn').onclick = async ()=>{
+      const u=document.getElementById('http-url').value; document.getElementById('http-result').textContent='Running...';
+      const p=await fetch('/api/http/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u})}).then(r=>r.json());
+      const d=await fetch('/api/http/results').then(r=>r.json()); update(httpChart,d.map(x=>x.time),d.map(x=>x.latency)); document.getElementById('http-result').textContent=`${p.status} in ${p.latency.toFixed(1)} ms`;
+    };
+    // 5) DNS
+    document.getElementById('run-dns-btn').onclick = async ()=>{
+      const dom=document.getElementById('dns-domain').value; document.getElementById('dns-result').textContent='Running...';
+      const p=await fetch('/api/dns/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:dom,type:'A'})}).then(r=>r.json());
+      const d=await fetch('/api/dns/results').then(r=>r.json()); update(dnsChart,d.map(x=>x.time),d.map(x=>x.latency)); document.getElementById('dns-result').textContent=`${p.success? 'OK':'Fail'} in ${p.latency? p.latency.toFixed(1): '--'} ms`;
+    };
+    // 6) GeoIP
+    document.getElementById('run-geoip-btn').onclick = async ()=>{
+      const ip=document.getElementById('geoip-ip').value; document.getElementById('geoip-result').textContent='Looking up...';
+      try{const d=await fetch(`/api/geoip/${ip}`).then(r=>r.json());document.getElementById('geoip-result').textContent=JSON.stringify(d,null,2);}catch(e){document.getElementById('geoip-result').textContent='Error';}
+    };
+    // 7) BGP
+    document.getElementById('run-bgp-btn').onclick = async ()=>{
+      const a=document.getElementById('bgp-asn').value; document.getElementById('bgp-result').textContent='Fetching...';
+      try{const d=await fetch(`/api/bgp/${a}`).then(r=>r.json());document.getElementById('bgp-result').textContent=`IPv4: ${d.ipv4}, IPv6: ${d.ipv6}`;}catch(e){document.getElementById('bgp-result').textContent='Error';}
+    };
+  </script>
+</body>
+</html>
