@@ -22,7 +22,8 @@ Built with Flask, Chart.js, SQLAlchemy (SQLite), and Bootstrap.
 
 ## Installation & Setup
 ### 1. Clone repository
-git clone https://github.com/sebkwakye/netinsight.git
+git clone https://github.com/sebkwakye/Network_Automation/Final_netinsight.git
+
 
 cd netinsight
 
